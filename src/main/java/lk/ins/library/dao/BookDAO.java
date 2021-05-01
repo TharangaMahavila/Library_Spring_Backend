@@ -26,6 +26,19 @@ public interface BookDAO extends JpaRepository<Book, String> {
     @Query("select new lk.ins.library.entity.custom.BookCustomEntity" +
             "(br.refNo,b.bookId,br.barcode,b.englishName,b.sinhalaName,b.year,b.price,b.medium,b.pages,b.note,b.image,b.author" +
             ",br.isReference,br.supplier,br.rack)" +
+            " from Book b join b.bookReferences br")
+    List<BookCustomEntity> findAllBooks(Pageable page);
+
+    @Query("select new lk.ins.library.entity.custom.BookCustomEntity" +
+            "(br.refNo,b.bookId,br.barcode,b.englishName,b.sinhalaName,b.year,b.price,b.medium,b.pages,b.note,b.image,b.author" +
+            ",br.isReference,br.supplier,br.rack)" +
+            " from Book b join b.bookReferences br " +
+            "where br.refNo like %?1%")
+    List<BookCustomEntity> findAllByRefNo(String searchKeyword, Pageable page);
+
+    @Query("select new lk.ins.library.entity.custom.BookCustomEntity" +
+            "(br.refNo,b.bookId,br.barcode,b.englishName,b.sinhalaName,b.year,b.price,b.medium,b.pages,b.note,b.image,b.author" +
+            ",br.isReference,br.supplier,br.rack)" +
             " from Book b join b.bookReferences br " +
             "where b.englishName like %?1% or b.sinhalaName like %?1%")
     List<BookCustomEntity> findAllByName(String searchKeyword, Pageable page);
@@ -36,6 +49,9 @@ public interface BookDAO extends JpaRepository<Book, String> {
             " from Book b join b.bookReferences br " +
             "where b.author.name like %?1%")
     List<BookCustomEntity> findAllByAuthor(String searchKeyword, Pageable page);
+
+    @Query("select count(b) from Book b join b.bookReferences br where br.refNo like %?1%")
+    int getSearchResultCountByRefNo(String refNo);
 
     @Query("select count(b) from Book b join b.bookReferences br where b.englishName like %?1% or b.sinhalaName like %?1%")
     int getSearchResultCountByName(String name);

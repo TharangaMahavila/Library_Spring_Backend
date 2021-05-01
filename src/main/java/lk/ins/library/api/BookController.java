@@ -179,12 +179,26 @@ public class BookController {
         }
     }
 
+    @GetMapping(value = "/allBooks",produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<?> getAllCustomBooks(@RequestParam("status") boolean status,Pageable page)throws Exception{
+        return new ResponseEntity<>(bookBO.getBooksByStatus(status,page),HttpStatus.OK);
+    }
+
     @PreAuthorize("permitAll()")
     @GetMapping(value = "/searchByName",produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<?> getBookByName(@RequestParam String name, Pageable page)throws Exception{
         return new ResponseEntity<>(bookBO.getBookByName(name,page),HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/searchByRefNo",produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<?> getBookByRefNo(@RequestParam String name, Pageable page)throws Exception{
+        return new ResponseEntity<>(bookBO.getBookByRefNo(name,page),HttpStatus.OK);
     }
 
     @PreAuthorize("permitAll()")
@@ -221,7 +235,13 @@ public class BookController {
     @GetMapping("/count")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getAllBookCountByStatus(@RequestParam("status") boolean status) throws Exception{
+    public ResponseEntity<?> getAllBookCountByStatus(@RequestParam(required = false) boolean status
+            ,@RequestParam(required = false) String refNo) throws Exception{
+
+        if(refNo != null){
+            return new ResponseEntity<>(bookBO.getBookCountByRefname(refNo),HttpStatus.OK);
+        }
+
         return new ResponseEntity<>(bookBO.getAllBookCountByStatus(status),HttpStatus.OK);
     }
 

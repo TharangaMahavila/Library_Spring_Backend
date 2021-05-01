@@ -80,6 +80,58 @@ public class BookBOImpl implements BookBO {
     }
 
     @Override
+    public List<BookCustomDTO> getBooksByStatus(boolean status,Pageable page) throws Exception {
+        List<BookCustomDTO> collect = bookDAO.findAllBooks(page).stream().map(customEntity -> mapper.getBookCustomDTO(customEntity))
+                .collect(Collectors.toList());
+        ArrayList<BookCustomDTO> disposaledDTOList = new ArrayList<>();
+        for (BookCustomDTO bookCustomDTO : collect) {
+            List<CategoryDTO> allCategories = bookDAO.findAllCategories(bookCustomDTO.getBookId()).stream()
+                    .map(category -> entityDTOMapper.getCategoryDTO(category)).collect(Collectors.toList());
+            bookCustomDTO.setCategories(allCategories);
+            if(bookDisposalDAO.countBookDisposalByRefNo(bookCustomDTO.getRefNo())>0){
+                disposaledDTOList.add(bookCustomDTO);
+            }
+            if (bookIssueDAO.isAlreadyIssued(bookCustomDTO.getRefNo())>0){
+                bookCustomDTO.setAvailable(false);
+            }else {
+                bookCustomDTO.setAvailable(true);
+            }
+        }
+        if(status == true){
+            for (BookCustomDTO bookCustomDTO : disposaledDTOList) {
+                collect.remove(bookCustomDTO);
+            }
+            return collect;
+        }else {
+            return disposaledDTOList;
+        }
+    }
+
+    @Override
+    public List<BookCustomDTO> getBookByRefNo(String refNo, Pageable page) throws Exception {
+        List<BookCustomDTO> collect = bookDAO.findAllByRefNo(refNo,page).stream().map(customEntity -> mapper.getBookCustomDTO(customEntity))
+                .collect(Collectors.toList());
+        ArrayList<BookCustomDTO> disposaledDTOList = new ArrayList<>();
+        for (BookCustomDTO bookCustomDTO : collect) {
+            List<CategoryDTO> allCategories = bookDAO.findAllCategories(bookCustomDTO.getBookId()).stream()
+                    .map(category -> entityDTOMapper.getCategoryDTO(category)).collect(Collectors.toList());
+            bookCustomDTO.setCategories(allCategories);
+            if(bookDisposalDAO.countBookDisposalByRefNo(bookCustomDTO.getRefNo())>0){
+                disposaledDTOList.add(bookCustomDTO);
+            }
+            if (bookIssueDAO.isAlreadyIssued(bookCustomDTO.getRefNo())>0){
+                bookCustomDTO.setAvailable(false);
+            }else {
+                bookCustomDTO.setAvailable(true);
+            }
+        }
+        for (BookCustomDTO bookCustomDTO : disposaledDTOList) {
+            collect.remove(bookCustomDTO);
+        }
+        return collect;
+    }
+
+    @Override
     public List<BookCustomDTO> getBookByName(String name, Pageable page) throws Exception {
         List<BookCustomDTO> collect = bookDAO.findAllByName(name,page).stream().map(customEntity -> mapper.getBookCustomDTO(customEntity))
                 .collect(Collectors.toList());
@@ -142,6 +194,11 @@ public class BookBOImpl implements BookBO {
         }else {
             return bookDisposalDAO.countAll();
         }
+    }
+
+    @Override
+    public int getBookCountByRefname(String refNo) throws Exception {
+        return bookDAO.getSearchResultCountByRefNo(refNo);
     }
 
     @Override
