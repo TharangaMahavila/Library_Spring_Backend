@@ -39,6 +39,12 @@ public interface BookDAO extends JpaRepository<Book, String> {
     @Query("select new lk.ins.library.entity.custom.BookCustomEntity" +
             "(br.refNo,b.bookId,br.barcode,b.englishName,b.sinhalaName,b.year,b.price,b.medium,b.pages,b.note,b.image,b.author" +
             ",br.isReference,br.supplier,br.rack)" +
+            " from Book b join b.bookReferences br where br.refNo = ?1")
+    BookCustomEntity findOneByRefNo(String refNo);
+
+    @Query("select new lk.ins.library.entity.custom.BookCustomEntity" +
+            "(br.refNo,b.bookId,br.barcode,b.englishName,b.sinhalaName,b.year,b.price,b.medium,b.pages,b.note,b.image,b.author" +
+            ",br.isReference,br.supplier,br.rack)" +
             " from Book b join b.bookReferences br " +
             "where b.englishName like %?1% or b.sinhalaName like %?1%")
     List<BookCustomEntity> findAllByName(String searchKeyword, Pageable page);

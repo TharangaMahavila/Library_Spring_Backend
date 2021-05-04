@@ -47,13 +47,24 @@ public class OrderCartController {
         return new ResponseEntity<List<OrderCartDTO>>(orderCartBO.findAllOrderCarts(page),HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{studentId}/{refId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{userId}",produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<Object> getOrderCartById(@PathVariable String studentId,@PathVariable String refId) throws Exception {
+    public ResponseEntity<Object> getOrderCartByUserId(@PathVariable String userId) throws Exception {
+        try{
+            return new ResponseEntity<>(orderCartBO.findAllOrderCartsByUserId(userId),HttpStatus.OK);
+        }catch (Exception e){
+            throw new Exception(e);
+        }
+    }
+
+    @GetMapping(value = "/{userId}/{refId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<Object> getOrderCartById(@PathVariable String userId,@PathVariable String refId) throws Exception {
         try{
             OrderCartDTO orderCartDTO = new OrderCartDTO();
-            orderCartDTO.setStudentId(studentId);
+            orderCartDTO.setUserId(userId);
             orderCartDTO.setRefId(refId);
             return new ResponseEntity<>(orderCartBO.findOrderCart(mapper.getOrderCartPk(orderCartDTO)),HttpStatus.OK);
         }catch (NoSuchElementException e){
@@ -73,8 +84,8 @@ public class OrderCartController {
             if(bookDisposalDAO.countBookDisposalByRefNo(dto.getRefId())>0){
                 return new ResponseEntity<>("This book has been already disposed",HttpStatus.BAD_REQUEST);
             }
-            if(orderCartDAO.cartCountPerStudent(dto.getStudentId())>10){
-                return new ResponseEntity<>("Cart is full for this student",HttpStatus.BAD_REQUEST);
+            if(orderCartDAO.cartCountPerUser(dto.getUserId())>10){
+                return new ResponseEntity<>("Cart is full for this user",HttpStatus.BAD_REQUEST);
             }
             if(bookReferenceDAO.isOnlyReferenceBook(dto.getRefId())>0){
                 return new ResponseEntity<>("This book is only for reference purpose",HttpStatus.BAD_REQUEST);
@@ -91,13 +102,13 @@ public class OrderCartController {
         }
     }
 
-    @DeleteMapping("/{studentId}/{refId}")
+    @DeleteMapping("/{userId}/{refId}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<Object> deleteOrderCart(@PathVariable String studentId,@PathVariable String refId) throws Exception {
+    public ResponseEntity<Object> deleteOrderCart(@PathVariable String userId,@PathVariable String refId) throws Exception {
         try{
             OrderCartDTO orderCartDTO = new OrderCartDTO();
-            orderCartDTO.setStudentId(studentId);
+            orderCartDTO.setUserId(userId);
             orderCartDTO.setRefId(refId);
             orderCartBO.findOrderCart(mapper.getOrderCartPk(orderCartDTO));
             orderCartBO.deleteOrderCart(mapper.getOrderCartPk(orderCartDTO));
@@ -109,13 +120,13 @@ public class OrderCartController {
         }
     }
 
-    @PutMapping(value = "/{studentId}/{refId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{userId}/{refId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<Object> updateOrderCart(@PathVariable String studentId,@PathVariable String refId
+    public ResponseEntity<Object> updateOrderCart(@PathVariable String userId,@PathVariable String refId
             , @Valid @RequestBody OrderCartDTO dto) throws Exception{
         try{
-            if(!((studentId.equals(dto.getStudentId())) && (refId.equals(dto.getRefId())) )){
+            if(!((userId.equals(dto.getUserId())) && (refId.equals(dto.getRefId())) )){
                 return new ResponseEntity<>("Mismatched Order Cart id",HttpStatus.BAD_REQUEST);
             }
             if(bookDisposalDAO.countBookDisposalByRefNo(dto.getRefId())>0){

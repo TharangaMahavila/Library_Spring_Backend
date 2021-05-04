@@ -3,6 +3,7 @@ package lk.ins.library.business.util;
 import lk.ins.library.dao.AuthorDAO;
 import lk.ins.library.dao.BookReferenceDAO;
 import lk.ins.library.dao.StudentDAO;
+import lk.ins.library.dao.UserDAO;
 import lk.ins.library.dto.*;
 import lk.ins.library.dto.custom.BookCustomDTO;
 import lk.ins.library.entity.*;
@@ -27,6 +28,8 @@ public abstract class BookEntityDTOMapper {
     private BookReferenceDAO bookReferenceDAO;
     @Autowired
     private StudentDAO studentDAO;
+    @Autowired
+    private UserDAO userDAO;
 
     @Mapping(source = ".",target = "author")
     public abstract Book getBook(BookDTO dto);
@@ -85,19 +88,19 @@ public abstract class BookEntityDTOMapper {
     @Mapping(source = ".",target = "orderCartPK")
     public abstract OrderCart getOrderCart(OrderCartDTO dto);
 
-    @Mapping(source = "orderCartPK", target = "studentId",qualifiedByName = "StudentId")
+    @Mapping(source = "orderCartPK", target = "userId",qualifiedByName = "UserId")
     @Mapping(source = "orderCartPK", target = "refId",qualifiedByName = "RefId")
     public abstract OrderCartDTO getOrderCartDTO(OrderCart orderCart);
 
     public OrderCartPK getOrderCartPk(OrderCartDTO dto){
-        Student student = studentDAO.getOne(dto.getStudentId());
+        User user = userDAO.getOne(dto.getUserId());
         BookReference bookReference = bookReferenceDAO.getOne(dto.getRefId());
-        return new OrderCartPK(student,bookReference);
+        return new OrderCartPK(user,bookReference);
     }
 
-    @Named("StudentId")
-    public String getStudentId(OrderCartPK pk){
-        return pk.getStudent().getRegNo();
+    @Named("UserId")
+    public String getUserId(OrderCartPK pk){
+        return pk.getUser().getUsername();
     }
 
     @Named("RefId")

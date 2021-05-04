@@ -15,8 +15,8 @@ import java.sql.Date;
 @Data @AllArgsConstructor @NoArgsConstructor
 public class OrderCartDTO implements Serializable {
 
-    @NotNull(message = "Student id is required")
-    private String studentId;
+    @NotNull(message = "User id is required")
+    private String userId;
     @NotNull(message = "Book reference is required")
     private String refId;
     private Date requestedAt;

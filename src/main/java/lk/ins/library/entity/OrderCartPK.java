@@ -17,8 +17,8 @@ import java.io.Serializable;
 @Data @AllArgsConstructor @NoArgsConstructor
 public class OrderCartPK implements Serializable {
     @ManyToOne
-    @JoinColumn(name = "student_id",referencedColumnName = "reg_no")
-    private Student student;
+    @JoinColumn(name = "user_id",referencedColumnName = "username")
+    private User user;
     @ManyToOne
     @JoinColumn(name = "ref_no",referencedColumnName = "ref_no")
     private BookReference bookReference;
