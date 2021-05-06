@@ -58,6 +58,7 @@ public class StaffBOImpl implements StaffBO {
         User savedUser = userDAO.getOne(userDTO.getUsername());
         User user = mapper.getUser(userDTO);
         user.setCreatedAt(savedUser.getCreatedAt());
+        user.setPassword(savedUser.getPassword());
         userDAO.save(user);
     }
 
