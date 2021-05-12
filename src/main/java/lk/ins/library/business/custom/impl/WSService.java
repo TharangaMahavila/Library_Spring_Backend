@@ -7,10 +7,11 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author:Tharanga Mahavila <tharangamahavila@gmail.com>
- * @since : 2021-05-07
+ * @since : 2021-05-12
  **/
 @Service
 public class WSService {
+
     private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
@@ -19,8 +20,7 @@ public class WSService {
     }
 
     public void notifyFrontend(final String message) {
-        ResponseMessage response = new ResponseMessage(message);
 
-        messagingTemplate.convertAndSend("/topic/messages", response);
+        messagingTemplate.convertAndSend("/topic/messages", message);
     }
 }
