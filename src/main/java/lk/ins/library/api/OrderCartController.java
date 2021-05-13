@@ -99,7 +99,7 @@ public class OrderCartController {
             dto.setRequestedAt(null);
             dto.setRequestStatus(false);
             orderCartBO.saveOrderCart(dto);
-            wsService.notifyFrontend("/api/v1/cart");
+            wsService.notifyFrontendCommon("/api/v1/cart");
             return new ResponseEntity<>(dto,HttpStatus.CREATED);
         }catch (Throwable e){
             throw  new Error(e);
@@ -116,7 +116,7 @@ public class OrderCartController {
             orderCartDTO.setRefId(refId);
             orderCartBO.findOrderCart(mapper.getOrderCartPk(orderCartDTO));
             orderCartBO.deleteOrderCart(mapper.getOrderCartPk(orderCartDTO));
-            wsService.notifyFrontend("/api/v1/cart");
+            wsService.notifyFrontendCommon("/api/v1/cart");
             return new ResponseEntity<>("Successfully deleted the orderCart", HttpStatus.CREATED);
         }catch (NoSuchElementException e){
             return new ResponseEntity<>("No Order Cart exist",HttpStatus.NOT_FOUND);
@@ -142,7 +142,7 @@ public class OrderCartController {
             }
             orderCartBO.findOrderCart(mapper.getOrderCartPk(dto));
             orderCartBO.updateOrderCart(dto);
-            wsService.notifyFrontend("/api/v1/cart");
+            wsService.notifyFrontendCommon("/api/v1/cart");
             return new ResponseEntity<>(dto,HttpStatus.CREATED);
         }catch (NoSuchElementException e) {
             return new ResponseEntity<>("No orderCart exist", HttpStatus.NOT_FOUND);

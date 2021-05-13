@@ -16,8 +16,8 @@ public class WSController {
     @Autowired
     private WSService service;
 
-    @PostMapping("/send-message")
+    @PostMapping("/send-common-message")
     public void sendMessage(@RequestBody final Message message) {
-        service.notifyFrontend(message.getMessageContent());
+        service.notifyFrontendCommon(message.getMessageContent());
     }
 }

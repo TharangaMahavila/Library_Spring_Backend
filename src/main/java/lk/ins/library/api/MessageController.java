@@ -16,8 +16,8 @@ import org.springframework.web.util.HtmlUtils;
 public class MessageController {
 
     @MessageMapping("/message")
-    @SendTo("/topic/messages")
-    public String getMessage(final String message) throws InterruptedException {
-        return message;
+    @SendTo("/topic/messages/common")
+    public ResponseMessage getMessage(final Message message) throws InterruptedException {
+        return new ResponseMessage(HtmlUtils.htmlEscape(message.getMessageContent()));
     }
 }

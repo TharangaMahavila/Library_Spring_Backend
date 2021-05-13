@@ -19,8 +19,9 @@ public class WSService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void notifyFrontend(final String message) {
+    public void notifyFrontendCommon(final String message) {
+        ResponseMessage response = new ResponseMessage(message);
 
-        messagingTemplate.convertAndSend("/topic/messages", message);
+        messagingTemplate.convertAndSend("/topic/messages/common", response);
     }
 }
