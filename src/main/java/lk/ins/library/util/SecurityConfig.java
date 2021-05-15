@@ -44,16 +44,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                /*.antMatchers("/api/v1/authors").hasAuthority("ADMIN")
+                .antMatchers("/api/v1/authors").hasAuthority("ADMIN")
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/api/v1/students").permitAll()
                 .antMatchers("/api/v1/authenticate").permitAll()
+                .antMatchers("/websocket/**").permitAll()
+                .antMatchers("/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/v1/books/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/v1/staffs/image/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/v1/students/image/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                .anyRequest().authenticated()*/
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
