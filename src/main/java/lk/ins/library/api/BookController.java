@@ -47,6 +47,8 @@ public class BookController {
     private BookReferenceBO bookReferenceBO;
     @Value("${path.images}")
     private String imagePath;
+    @Value("${path.pdf}")
+    private String pdfPath;
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
 
@@ -140,6 +142,34 @@ public class BookController {
             FileUtils.writeByteArrayToFile(file,image.getBytes());
             bookBO.updateBookImage(id,savePath);
             return new ResponseEntity<>("Successfully updated the book image",HttpStatus.CREATED);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("No book found!",HttpStatus.NOT_FOUND);
+        }catch (Throwable e){
+            throw  new Error(e);
+        }
+    }
+
+    @PostMapping(value = "/uploadPdf/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> saveBookPdf(@RequestParam("pdf") MultipartFile pdf, @PathVariable String id) throws Exception{
+        try{
+            BookDTO book = bookBO.findBook(id);
+            String filename = pdf.getOriginalFilename();
+            String extentsion = FilenameUtils.getExtension(filename).toLowerCase();
+            if(!(extentsion.equals("pdf") || extentsion.equals("PDF"))){
+                return new ResponseEntity<>("File Format is not allowed",HttpStatus.BAD_REQUEST);
+            }
+            String savePath = pdfPath+File.separator+"Books"+File.separator+ book.getEnglishName()+"_"
+                    +new Timestamp(System.currentTimeMillis()) +"."+FilenameUtils.getExtension(filename);
+            Path path = Paths.get(pdfPath+File.separator+"Books");
+            if(!Files.exists(path)){
+                Files.createDirectories(path);
+            }
+            File file = new File(savePath);
+            FileUtils.writeByteArrayToFile(file,pdf.getBytes());
+            //bookBO.updateBookImage(id,savePath);
+            return new ResponseEntity<>("Successfully upload the book pdf",HttpStatus.CREATED);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>("No book found!",HttpStatus.NOT_FOUND);
         }catch (Throwable e){
