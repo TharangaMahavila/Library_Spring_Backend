@@ -154,25 +154,47 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> saveBookPdf(@RequestParam("pdf") MultipartFile pdf, @PathVariable String id) throws Exception{
         try{
-            BookDTO book = bookBO.findBook(id);
             String filename = pdf.getOriginalFilename();
             String extentsion = FilenameUtils.getExtension(filename).toLowerCase();
             if(!(extentsion.equals("pdf") || extentsion.equals("PDF"))){
-                return new ResponseEntity<>("File Format is not allowed",HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("File Format is not allowed",HttpStatus.UNSUPPORTED_MEDIA_TYPE);
             }
-            String savePath = pdfPath+File.separator+"Books"+File.separator+ book.getEnglishName()+"_"
-                    +new Timestamp(System.currentTimeMillis()) +"."+FilenameUtils.getExtension(filename);
-            Path path = Paths.get(pdfPath+File.separator+"Books");
+            String savePath = pdfPath+File.separator+"Books"+File.separator+id+File.separator+filename;
+            Path path = Paths.get(pdfPath+File.separator+"Books"+File.separator+id);
             if(!Files.exists(path)){
                 Files.createDirectories(path);
             }
             File file = new File(savePath);
             FileUtils.writeByteArrayToFile(file,pdf.getBytes());
-            //bookBO.updateBookImage(id,savePath);
             return new ResponseEntity<>("Successfully upload the book pdf",HttpStatus.CREATED);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>("No book found!",HttpStatus.NOT_FOUND);
-        }catch (Throwable e){
+        } catch (Throwable e){
+            throw  new Error(e);
+        }
+    }
+
+    @DeleteMapping(value = "/deletePdf/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> deleteBookPdf(@RequestParam("pdf") String pdfName, @PathVariable String id) throws Exception{
+        try{
+            String savePath = pdfPath+File.separator+"Books"+File.separator+id+File.separator+pdfName;
+            Path path = Paths.get(pdfPath+File.separator+"Books"+File.separator+id);
+            if(!Files.exists(path)){
+                return new ResponseEntity<>("File path not found!",HttpStatus.NOT_FOUND);
+            }
+            File file = new File(savePath);
+            if(!file.exists()){
+                return new ResponseEntity<>("pdf book not found",HttpStatus.NOT_FOUND);
+            }
+            if(file.delete()){
+                if(!Files.list(path).findFirst().isPresent()){
+                    Files.delete(path);
+                }
+                return new ResponseEntity<>("Successfully deleted the book pdf",HttpStatus.CREATED);
+            }else {
+                return new ResponseEntity<>("Cannot delete the book pdf",HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Throwable e){
             throw  new Error(e);
         }
     }
