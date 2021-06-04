@@ -23,6 +23,11 @@ public interface BookDAO extends JpaRepository<Book, String> {
     @Query("update Book set image=?2 where id=?1")
     void updateBookImage(String id, String imagePath);
 
+    @Transactional
+    @Modifying
+    @Query("update Book set image=null where bookId=?1")
+    void deleteBookImage(String id);
+
     @Query("select new lk.ins.library.entity.custom.BookCustomEntity" +
             "(br.refNo,b.bookId,br.barcode,b.englishName,b.sinhalaName,b.year,b.price,b.medium,b.pages,b.note,b.image,b.author" +
             ",br.isReference,br.supplier,br.rack)" +
@@ -67,5 +72,8 @@ public interface BookDAO extends JpaRepository<Book, String> {
 
     @Query("from Category c join c.books b where b.id = ?1")
     List<Category> findAllCategories(String bookId);
+
+    @Query("select count(b) from Book b where b.bookId=?1")
+    int countAllByBookId(String regNo);
 
 }

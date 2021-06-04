@@ -80,6 +80,11 @@ public class BookBOImpl implements BookBO {
     }
 
     @Override
+    public void deleteBookImage(String id) throws Exception {
+        bookDAO.deleteBookImage(id);
+    }
+
+    @Override
     public List<BookCustomDTO> getBooksByStatus(boolean status,Pageable page) throws Exception {
         List<BookCustomDTO> collect = bookDAO.findAllBooks(page).stream().map(customEntity -> mapper.getBookCustomDTO(customEntity))
                 .collect(Collectors.toList());
@@ -209,5 +214,10 @@ public class BookBOImpl implements BookBO {
     @Override
     public int getBookCountByAuthor(String name) throws Exception {
         return bookDAO.getSearchResultCountByAuthor(name);
+    }
+
+    @Override
+    public int countBookByBookId(String id) throws Exception {
+        return bookDAO.countAllByBookId(id);
     }
 }

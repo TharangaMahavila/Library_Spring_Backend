@@ -4,6 +4,7 @@ import lk.ins.library.business.custom.BookBO;
 import lk.ins.library.business.custom.BookReferenceBO;
 import lk.ins.library.business.custom.UserBO;
 import lk.ins.library.dto.BookDTO;
+import lk.ins.library.dto.StudentDTO;
 import lk.ins.library.dto.UserDTO;
 import lk.ins.library.entity.Role;
 import org.apache.commons.io.FileUtils;
@@ -144,6 +145,23 @@ public class BookController {
             return new ResponseEntity<>("Successfully updated the book image",HttpStatus.CREATED);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>("No book found!",HttpStatus.NOT_FOUND);
+        }catch (Throwable e){
+            throw  new Error(e);
+        }
+    }
+
+    @DeleteMapping(value = "/image/{id}")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> deleteImage(@PathVariable String id) throws Exception{
+        try{
+            BookDTO book = bookBO.findBook(id);
+            if(book.getImage() != null){
+                bookBO.deleteBookImage(id);
+            }
+            return new ResponseEntity<>("Successfully deleted the Book profile image",HttpStatus.CREATED);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("No Book found!",HttpStatus.NOT_FOUND);
         }catch (Throwable e){
             throw  new Error(e);
         }
@@ -306,5 +324,17 @@ public class BookController {
         Date start = new Date(startDate);
         Date end = new Date(endDate);
         return new ResponseEntity<>(bookReferenceBO.countBooksBetweenPeriod(start,end),HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/validate/{id}")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> validateBookId(@PathVariable String id) throws Exception{
+        int bookCount = bookBO.countBookByBookId(id);
+        if(bookCount == 0){
+            return new ResponseEntity<>(0,HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(1,HttpStatus.OK);
+        }
     }
 }

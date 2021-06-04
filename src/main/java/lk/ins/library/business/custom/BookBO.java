@@ -24,6 +24,7 @@ public interface BookBO extends SuperBO{
     public BookDTO findBook(String id) throws Exception;
 
     public void updateBookImage(String id, String imagePath) throws Exception;
+    public void deleteBookImage(String id) throws Exception;
 
     public List<BookCustomDTO> getBooksByStatus(boolean status,Pageable page) throws Exception;
     public List<BookCustomDTO> getBookByRefNo(String refNo, Pageable page) throws Exception;
@@ -35,4 +36,6 @@ public interface BookBO extends SuperBO{
     public int getBookCountByRefname(String refNo) throws Exception;
     public int getBookCountByName(String name) throws Exception;
     public int getBookCountByAuthor(String name) throws Exception;
+
+    public int countBookByBookId(String id) throws Exception;
 }
